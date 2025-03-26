@@ -83,6 +83,45 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     }
-     
-
+  function updateFilters() {
+        activeFiltersContainer.innerHTML = '';
+    
+        if (activeFilters.length === 0) {
+            filterContainer.classList.add('hidden');
+            return;
+        }
+        filterContainer.classList.remove('hidden');
+        activeFilters.forEach(filter => {
+            const filterTag = document.createElement('div');
+            filterTag.className = 'filter-tag';
+            filterTag.innerHTML = `
+            <span>${filter}</span>
+            <button data-filter="${filter}">✕</button>
+            `;
+      
+            activeFiltersContainer.appendChild(filterTag);
+            const removeBtn = filterTag.querySelector('button');
+            removeBtn.addEventListener('click', function() {
+            const filterToRemove = this.getAttribute('data-filter');
+            activeFilters = activeFilters.filter(f => f !== filterToRemove);
+            updateFilters();
+            filterJobs();
+         });
+    });
+  }
+  function filterJobs() {
+    if (activeFilters.length === 0) {
+      displayJobs(jobs);
+      return;
+    }
+    
+    const filteredJobs = jobs.filter(job => {
+      const jobTags = [job.role, job.level, ...job.languages, ...job.tools];
+      
+      return activeFilters.every(filter => jobTags.includes(filter));
+    });
+    
+    displayJobs(filteredJobs);
+  }
 });
+     
